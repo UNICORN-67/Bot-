@@ -1,0 +1,4 @@
+pyrogram
+redis
+psutil
+python-dotenv
