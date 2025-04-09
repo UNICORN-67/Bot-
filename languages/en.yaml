@@ -1,2 +1,34 @@
 start:
-  start: "ʜᴇʟʟᴏ!"
+  start: "ʜᴇʟʟᴏ! ɪ'ᴍ ᴀ ᴛᴇʟᴇɢʀᴀᴍ ɢʀᴏᴜᴘ ᴍᴀɴᴀɢᴇᴍᴇɴᴛ ʙᴏᴛ."
+  help: "ᴜsᴇ ᴄᴏᴍᴍᴀɴᴅs ᴛᴏ ᴄᴏɴᴛʀᴏʟ ʏᴏᴜʀ ɢʀᴏᴜᴘ."
+
+admin:
+  ban: "ᴜsᴇʀ ʙᴀɴɴᴇᴅ."
+  unban: "ᴜsᴇʀ ᴜɴʙᴀɴɴᴇᴅ."
+  gban: "ᴜsᴇʀ ɢʟᴏʙᴀʟʟʏ ʙᴀɴɴᴇᴅ."
+  ungban: "ᴜsᴇʀ ᴜɴɢʙᴀɴɴᴇᴅ."
+  kick: "ᴜsᴇʀ ᴋɪᴄᴋᴇᴅ."
+  promote: "ᴜsᴇʀ ᴘʀᴏᴍᴏᴛᴇᴅ."
+  demote: "ᴜsᴇʀ ᴅᴇᴍᴏᴛᴇᴅ."
+  warn: "ᴜsᴇʀ ᴡᴀʀɴᴇᴅ."
+  unwarn: "ᴜsᴇʀ ᴡᴀʀɴ ʀᴇᴍᴏᴠᴇᴅ."
+
+general:
+  id: "ʏᴏᴜʀ ɪᴅ: {id}"
+  userinfo: "ɴᴀᴍᴇ: {name}\nɪᴅ: {id}\nᴜsᴇʀɴᴀᴍᴇ: @{username}"
+  groupinfo: "ɢʀᴏᴜᴘ ɴᴀᴍᴇ: {title}\nɢʀᴏᴜᴘ ɪᴅ: {id}"
+  alive: "ʙᴏᴛ ɪs ᴀʟɪᴠᴇ\nᴜᴘᴛɪᴍᴇ: {uptime}\nᴄᴘᴜ: {cpu}%\nʀᴀᴍ: {ram}%"
+  stats: "ɢʀᴏᴜᴘ ᴍᴇᴍᴏʀʏ: {memory}\nᴄᴘᴜ: {cpu}\nʀᴇᴅɪs: {redis}"
+
+security:
+  nsfw_detected: "ɴsғᴡ ᴄᴏɴᴛᴇɴᴛ ᴅᴇᴛᴇᴄᴛᴇᴅ! ᴍᴇssᴀɢᴇ ʀᴇᴍᴏᴠᴇᴅ."
+  antilink_warn: "ʟɪɴᴋs ᴀʀᴇ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ ɪɴ ᴛʜɪs ɢʀᴏᴜᴘ!"
+  flood_warn: "sᴛᴏᴘ sᴘᴀᴍᴍɪɴɢ!"
+
+log:
+  log_sent: "ʟᴏɢ sᴇɴᴛ ᴛᴏ ᴄʜᴀɴɴᴇʟ."
+  no_permission: "ɴᴏ ᴘᴇʀᴍɪssɪᴏɴ ᴛᴏ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɪɴ ʟᴏɢ ᴄʜᴀɴɴᴇʟ."
+
+errors:
+  not_admin: "ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ!"
+  user_not_found: "ᴄᴏᴜʟᴅ ɴᴏᴛ ғɪɴᴅ ᴛʜᴀᴛ ᴜsᴇʀ."
