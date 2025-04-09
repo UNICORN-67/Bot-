@@ -7,13 +7,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Telegram Bot Credentials
-API_ID = int(os.getenv("API_ID", 12345))
-API_HASH = os.getenv("API_HASH", "your_api_hash")
+API_ID = int(os.getenv("API_ID", 9683694))
+API_HASH = os.getenv("API_HASH", "c426d9f7087744afdafc961a620b6338")
 BOT_TOKEN = os.getenv("BOT_TOKEN", "your_bot_token")
 
 # Redis Configuration
 REDIS_URI = os.getenv("REDIS_URI", "redis://localhost:6379/0")
 
 # Logging and Permissions
-LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID", 0))  # set to 0 if not used
-OWNER_ID = int(os.getenv("OWNER_ID", 123456789))  # Your Telegram user ID
+LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID", -1002621770250))  # set to 0 if not used
+OWNER_ID = int(os.getenv("OWNER_ID", 7661577681))  # Your Telegram user ID
