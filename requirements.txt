@@ -1,4 +1,9 @@
-pyrogram
-redis
-psutil
-python-dotenv
+pyrogram==2.0.106
+tgcrypto==1.2.5
+redis==5.0.1
+PyYAML==6.0.1
+numpy==1.26.4
+opencv-python-headless==4.9.0.80
+scikit-learn==1.4.2
+Pillow==10.2.0
+python-dotenv==1.0.1
