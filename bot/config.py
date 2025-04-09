@@ -9,7 +9,7 @@ load_dotenv()
 # Telegram Bot Credentials
 API_ID = int(os.getenv("API_ID", 9683694))
 API_HASH = os.getenv("API_HASH", "c426d9f7087744afdafc961a620b6338")
-BOT_TOKEN = os.getenv("BOT_TOKEN", "your_bot_token")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8146545438:AAFoq4cmKkhnkNAz9x65-8F_HxeeSy-hWBA")
 
 # Redis Configuration
 REDIS_URI = os.getenv("REDIS_URI", "redis://localhost:6379/0")
