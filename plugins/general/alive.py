@@ -1,37 +1,31 @@
 # Alive command with stats
-import time
-import psutil
 import platform
-from pyrogram import Client, filters
+import psutil
+from datetime import datetime
+from pyrogram import filters
 from pyrogram.types import Message
-from db.redisdb import redis
-from languages.get import get_string
-from utils.uptime import get_uptime
+from bot import app, START_TIME
+from languages.get import lang
+from utils.helpers import get_readable_time
 
-lang = get_string("en")
+_ = lang("en")
 
-@Client.on_message(filters.command("alive") & filters.private)
-async def alive(client: Client, message: Message):
-    uptime = get_uptime()
-    cpu = psutil.cpu_percent()
-    ram = psutil.virtual_memory().percent
-    os_info = platform.system() + " " + platform.release()
+@app.on_message(filters.command("alive"))
+async def alive(_, message: Message):
+    uptime = get_readable_time((datetime.now() - START_TIME).seconds)
+    cpu_usage = psutil.cpu_percent()
+    ram_usage = psutil.virtual_memory().percent
+    platform_info = platform.system() + " " + platform.release()
+    python_version = platform.python_version()
 
-    # Redis ping
-    try:
-        ping_start = time.time()
-        await redis.ping()
-        redis_ping = round((time.time() - ping_start) * 1000, 2)
-    except Exception:
-        redis_ping = "ᴏғғʟɪɴᴇ"
-
-    msg = (
-        f"{lang['general']['alive']}\n"
-        f"ᴏs: {os_info}\n"
-        f"ᴜᴘᴛɪᴍᴇ: {uptime}\n"
-        f"ᴄᴘᴜ: {cpu}%\n"
-        f"ʀᴀᴍ: {ram}%\n"
-        f"ʀᴇᴅɪs: {redis_ping} ms"
+    text = _(
+        "general.alive_full"
+    ).format(
+        uptime=uptime,
+        cpu=cpu_usage,
+        ram=ram_usage,
+        platform=platform_info,
+        python=python_version
     )
 
-    await message.reply(msg)
+    await message.reply_text(text)
