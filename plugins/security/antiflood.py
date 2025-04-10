@@ -1,42 +1,32 @@
 # Anti-flood module
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from db.redisdb import redis
-from languages.get import get_string
-import time
+from pyrogram import filters from pyrogram.types import Message from bot import app from languages.get import lang from db.redisdb import get_toggle
 
-lang = get_string("en")
-flood_cache = {}
+_ = lang("en")
 
-@Client.on_message(filters.group)
-async def check_antiflood(client: Client, message: Message):
-    gid = str(message.chat.id)
-    uid = message.from_user.id
+@app.on_message(filters.group) async def check_flood(_, message: Message): chat_id = message.chat.id user_id = message.from_user.id if message.from_user else None
 
-    enabled = await redis.get(f"antiflood:{gid}")
-    if enabled != "on":
-        return
+if not user_id:
+    return
 
-    now = time.time()
-    key = f"{gid}:{uid}"
-    if key in flood_cache and now - flood_cache[key] < 1.5:
+if not await get_toggle(chat_id, "antiflood"):
+    return
+
+# Simplified anti-flood logic (example):
+if not hasattr(app, "flood_control"):
+    app.flood_control = {}
+
+key = f"{chat_id}:{user_id}"
+now = message.date.timestamp()
+
+if key in app.flood_control:
+    last_time = app.flood_control[key]
+    if now - last_time < 1.5:
         try:
             await message.delete()
-        except:
+            await app.restrict_chat_member(chat_id, user_id, permissions={})
+            await message.reply_text(_("security.antiflood_triggered"))
+        except Exception:
             pass
-    flood_cache[key] = now
+app.flood_control[key] = now
 
-@Client.on_message(filters.command("antiflood") & filters.group)
-async def toggle_antiflood(client: Client, message: Message):
-    gid = str(message.chat.id)
-    if len(message.command) < 2:
-        return await message.reply(lang["security"]["antiflood_usage"])
-
-    cmd = message.command[1].lower()
-    if cmd == "on":
-        await redis.set(f"antiflood:{gid}", "on")
-        await message.reply(lang["security"]["antiflood_on"])
-    elif cmd == "off":
-        await redis.delete(f"antiflood:{gid}")
-        await message.reply(lang["security"]["antiflood_off"])
