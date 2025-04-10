@@ -1,7 +1,7 @@
 from pyrogram import filters
 from pyrogram.types import Message
 from nsfw.detector import detect_text_nsfw, detect_image_nsfw
-from redis.redisdb import is_enabled
+from db.redisdb import is_enabled
 
 @filters.group & filters.incoming
 async def nsfw_protect(client, message: Message):
