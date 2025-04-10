@@ -1,10 +1,10 @@
 # Redis DB connection
 
 import redis
-from bot.config import REDIS_URL
+from bot.config import REDIS_URI
 
 # Initialize Redis connection
-redis = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+redis = redis.Redis.from_url(REDIS_URI, decode_responses=True)
 
 # Toggle management
 def get_toggle(group_id: int, toggle_name: str) -> bool:
