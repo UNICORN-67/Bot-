@@ -5,7 +5,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from languages.get import get_string
 from utils.uptime import get_uptime
-from redis.redisdb import redis
+from db.redisdb import redis
 
 lang = get_string("en")
 
