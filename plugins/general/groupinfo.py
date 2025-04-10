@@ -1,20 +1,8 @@
 # Group info command
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from languages.get import get_string
+from pyrogram import filters from pyrogram.types import Message from bot import app from languages.get import lang
 
-lang = get_string("en")
+_ = lang("en")
 
-@Client.on_message(filters.command("groupinfo") & filters.group)
-async def group_info(client: Client, message: Message):
-    chat = message.chat
-    text = (
-        f"**{lang['general']['group_info']}**\n"
-        f"**ɴᴀᴍᴇ:** {chat.title}\n"
-        f"**ɪᴅ:** `{chat.id}`\n"
-        f"**ᴜsᴇʀɴᴀᴍᴇ:** @{chat.username if chat.username else 'ɴᴏɴᴇ'}\n"
-        f"**ᴛʏᴘᴇ:** {chat.type.capitalize()}\n"
-        f"**ᴍᴇᴍʙᴇʀs:** `{await client.get_chat_members_count(chat.id)}`"
-    )
-    await message.reply(text)
+@app.on_message(filters.command("groupinfo") & filters.group) async def group_info(_, message: Message): chat = message.chat text = _("general.group_info").format( title=chat.title, id=chat.id, type=chat.type.name, members=chat.members_count if hasattr(chat, 'members_count') else "Unknown", username=f"@{chat.username}" if chat.username else "None" ) await message.reply_text(text)
+
