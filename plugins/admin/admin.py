@@ -2,7 +2,7 @@
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from redis.redisdb import redis
+from db.redisdb import redis
 from bot.config import OWNER_ID
 from languages.get import get_string
 
