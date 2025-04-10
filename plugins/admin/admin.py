@@ -9,7 +9,9 @@ from pyrogram.enums import ChatMemberStatus
 
 _ = lang("en")
 
-@app.on_message(filters.command("ban") & filters.group) async def ban_user(, message: Message): user = await extract_user(message) if not user: return await message.reply_text(("admin.no_user")) await message.chat.ban_member(user.id) await message.reply_text(_("admin.banned"))
+@app.on_message(filters.command("ban") & filters.group) 
+async def ban_user(, message: Message): 
+user = await extract_user(message) if not user: return await message.reply_text(("admin.no_user")) await message.chat.ban_member(user.id) await message.reply_text(_("admin.banned"))
 
 @app.on_message(filters.command("unban") & filters.group) async def unban_user(, message: Message): user = await extract_user(message) if not user: return await message.reply_text(("admin.no_user")) await message.chat.unban_member(user.id) await message.reply_text(_("admin.unbanned"))
 
