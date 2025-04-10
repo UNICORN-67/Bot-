@@ -3,7 +3,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from nsfw.detector import detect_nsfw
-from redis.redisdb import redis
+from db.redisdb import redis
 from languages.get import get_string
 
 lang = get_string("en")
