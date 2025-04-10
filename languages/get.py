@@ -1,17 +1,33 @@
 import yaml
 import os
 
-# Load all available language files into memory (e.g., en.yml)
-LANGUAGES = {}
+def get_string(lang_code: str, key: str) -> str:
+    """
+    Retrieve a translated string by language code and key from the YAML file.
+    Example key: "start.welcome"
+    """
+    try:
+        path = os.path.join("languages", f"{lang_code}.yml")
+        if not os.path.isfile(path):
+            return "Language file not found"
 
-LANGUAGE_DIR = os.path.join(os.path.dirname(__file__))
+        with open(path, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
 
-for file in os.listdir(LANGUAGE_DIR):
-    if file.endswith(".yml"):
-        lang_code = file.replace(".yml", "")
-        with open(os.path.join(LANGUAGE_DIR, file), "r", encoding="utf-8") as f:
-            LANGUAGES[lang_code] = yaml.safe_load(f)
+        keys = key.split(".")
+        for k in keys:
+            if isinstance(data, dict):
+                data = data.get(k)
+            else:
+                return "Invalid key path"
 
-# Get translated string
-def get_string(lang: str, key: str) -> str:
-    return LANGUAGES.get(lang, LANGUAGES.get("en", {})).get(key, key)
+        return data if isinstance(data, str) else "String not found"
+    except Exception as e:
+        return f"Error loading string: {e}"
+
+
+# Optional helper for easier access
+def lang(language: str):
+    def translator(key: str) -> str:
+        return get_string(language, key)
+    return translator
