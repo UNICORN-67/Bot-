@@ -1,26 +1,15 @@
 # ID command
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from languages.get import get_string
+from pyrogram import filters from pyrogram.types import Message from bot import app from languages.get import lang
 
-lang = get_string("en")
+_ = lang("en")
 
-@Client.on_message(filters.command("id"))
-async def id_command(client: Client, message: Message):
-    if message.reply_to_message:
-        user = message.reply_to_message.from_user
-        reply_text = (
-            f"**{lang['general']['id_info']}**\n"
-            f"ᴜꜱᴇʀ ɪᴅ: `{user.id}`\n"
-            f"ᴄʜᴀᴛ ɪᴅ: `{message.chat.id}`\n"
-            f"ᴍꜱɢ ɪᴅ: `{message.reply_to_message.id}`"
-        )
-    else:
-        reply_text = (
-            f"**{lang['general']['id_info']}**\n"
-            f"ʏᴏᴜʀ ɪᴅ: `{message.from_user.id}`\n"
-            f"ᴄʜᴀᴛ ɪᴅ: `{message.chat.id}`\n"
-            f"ᴍꜱɢ ɪᴅ: `{message.id}`"
-        )
-    await message.reply(reply_text)
+@app.on_message(filters.command("id")) async def get_id(_, message: Message): user_id = message.from_user.id if message.from_user else "Unknown" chat_id = message.chat.id reply_id = message.reply_to_message.from_user.id if message.reply_to_message else "N/A"
+
+text = _("general.id_info").format(
+    user_id=user_id,
+    chat_id=chat_id,
+    reply_id=reply_id
+)
+await message.reply_text(text)
+
