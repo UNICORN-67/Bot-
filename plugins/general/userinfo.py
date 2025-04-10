@@ -1,24 +1,17 @@
 # User info command
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from languages.get import get_string
+from pyrogram import filters from pyrogram.types import Message from bot import app from languages.get import lang from utils.helpers import extract_user
 
-lang = get_string("en")
+_ = lang("en")
 
-@Client.on_message(filters.command("userinfo"))
-async def user_info(client: Client, message: Message):
-    if message.reply_to_message:
-        user = message.reply_to_message.from_user
-    else:
-        user = message.from_user
+@app.on_message(filters.command("userinfo")) async def userinfo_cmd(, message: Message): user = await extract_user(message) if not user: return await message.reply_text(("general.unknown_user"))
 
-    text = (
-        f"**{lang['general']['user_info']}**\n"
-        f"**ɴᴀᴍᴇ:** {user.first_name or '---'}\n"
-        f"**ɪᴅ:** `{user.id}`\n"
-        f"**ᴜsᴇʀɴᴀᴍᴇ:** @{user.username if user.username else 'ɴᴏɴᴇ'}\n"
-        f"**ʟᴀɴɢᴜᴀɢᴇ:** `{user.language_code or 'ɴ/ᴀ'}`\n"
-        f"**ʙᴏᴛ:** {'ʏᴇs' if user.is_bot else 'ɴᴏ'}"
-    )
-    await message.reply(text)
+text = _("general.userinfo").format(
+    id=user.id,
+    first_name=user.first_name or "N/A",
+    username="@" + user.username if user.username else "N/A",
+    dc_id=user.dc_id if hasattr(user, "dc_id") else "N/A",
+    is_bot=user.is_bot
+)
+await message.reply_text(text)
+
