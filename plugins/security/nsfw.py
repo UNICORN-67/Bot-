@@ -1,37 +1,42 @@
 # NSFW detection module
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from nsfw.detector import detect_text_nsfw,detect_video_nsfw,detect_image_nsfw
-from db.redisdb import redis
-from languages.get import get_string
+from pyrogram import filters from pyrogram.types import Message from bot import app from nsfw.detector import detect_text_nsfw, detect_sticker_nsfw, detect_gif_nsfw, detect_video_nsfw from languages.get import lang from db.redisdb import get_toggle
 
-lang = get_string("en")
+_ = lang("en")
 
-@Client.on_message(filters.group & (filters.photo | filters.video | filters.sticker | filters.animation | filters.text))
-async def nsfw_filter(client: Client, message: Message):
-    gid = str(message.chat.id)
-    enabled = await redis.get(f"nsfw:{gid}")
-    if enabled != "on":
+@app.on_message(filters.group, group=5) async def nsfw_filter(_, message: Message): chat_id = message.chat.id
+
+if not await get_toggle(chat_id, "nsfw"):
+    return
+
+try:
+    # Text NSFW
+    if message.text and await detect_text_nsfw(message.text):
+        await message.delete()
+        await message.reply_text(_("security.nsfw_text_detected"))
         return
 
-    result = await detect_nsfw(message)
-    if result == "NSFW":
-        try:
+    # Sticker NSFW
+    if message.sticker:
+        if await detect_sticker_nsfw(message):
             await message.delete()
-        except:
-            pass
+            await message.reply_text(_("security.nsfw_sticker_detected"))
+            return
 
-@Client.on_message(filters.command("nsfw") & filters.group)
-async def toggle_nsfw(client: Client, message: Message):
-    gid = str(message.chat.id)
-    if len(message.command) < 2:
-        return await message.reply(lang["security"]["nsfw_usage"])
+    # GIF NSFW
+    if message.animation:
+        if await detect_gif_nsfw(message):
+            await message.delete()
+            await message.reply_text(_("security.nsfw_gif_detected"))
+            return
 
-    cmd = message.command[1].lower()
-    if cmd == "on":
-        await redis.set(f"nsfw:{gid}", "on")
-        await message.reply(lang["security"]["nsfw_on"])
-    elif cmd == "off":
-        await redis.delete(f"nsfw:{gid}")
-        await message.reply(lang["security"]["nsfw_off"])
+    # Video NSFW
+    if message.video:
+        if await detect_video_nsfw(message):
+            await message.delete()
+            await message.reply_text(_("security.nsfw_video_detected"))
+            return
+
+except Exception as e:
+    print(f"NSFW detection error: {e}")
+
