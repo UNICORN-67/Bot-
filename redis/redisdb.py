@@ -1,12 +1,18 @@
 # Redis DB connection
 
-from redis import from_url
-from bot import config
+import redis
+from bot.config import REDIS_URL
 
-redis = from_url(config.REDIS_URI, decode_responses=True)
+# Initialize Redis connection
+redis = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 
-async def get_toggle(toggle_type: str, chat_id: int) -> bool:
-    return r.get(f"{toggle_type}_{chat_id}") == "true"
+# Toggle management
+def get_toggle(group_id: int, toggle_name: str) -> bool:
+    value = redis.get(f"toggle:{toggle_name}:{group_id}")
+    return value == "true"
 
-async def set_toggle(toggle_type: str, chat_id: int, value: bool):
-    r.set(f"{toggle_type}_{chat_id}", str(value).lower())
+def set_toggle(group_id: int, toggle_name: str, value: bool):
+    redis.set(f"toggle:{toggle_name}:{group_id}", str(value).lower())
+
+def delete_toggle(group_id: int, toggle_name: str):
+    redis.delete(f"toggle:{toggle_name}:{group_id}")
