@@ -1,12 +1,8 @@
 # Start and help command
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from languages.get import get_string
+from pyrogram import filters from pyrogram.types import Message from bot import app from languages.get import lang
 
-lang = get_string("en")  # You can modify this to be dynamic per user/group
+_ = lang("en")
 
-@Client.on_message(filters.command("start"))
-async def start_command(client: Client, message: Message):
-    text = lang["general"]["start_text"]
-    await message.reply(text)
+@app.on_message(filters.command("start")) async def start_cmd(, message: Message): await message.reply_text(("general.start"))
+
