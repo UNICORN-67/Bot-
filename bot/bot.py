@@ -3,7 +3,7 @@
 from pyrogram import Client
 from bot.config import API_ID, API_HASH, BOT_TOKEN
 from utils.logger import setup_logger
-from redis.redisdb import redis  # Optional: If you want to test Redis connection
+from db.redisdb import redis  # Optional: If you want to test Redis connection
 
 log = setup_logger("bot")
 
