@@ -1,7 +1,7 @@
 # Language handler
 
 import yaml
-from redis.redisdb import redis
+from db.redisdb import redis
 
 def load_yaml(lang_code: str = "en") -> dict:
     path = f"languages/{lang_code}.yml"
