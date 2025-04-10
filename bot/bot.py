@@ -1,21 +1,26 @@
 # Initializes bot, loads plugins
 
-import asyncio
-from bot import app
+from pyrogram import Client
+from bot.config import API_ID, API_HASH, BOT_TOKEN
 from utils.logger import setup_logger
+from redis.redisdb import redis  # Optional: If you want to test Redis connection
 
-# Setup logger
-logger = setup_logger("Bot")
+log = setup_logger("bot")
 
-# Main run function
-async def run_bot():
-    logger.info("Starting bot...")
-    await app.start()
-    logger.info("Bot started successfully.")
-    await idle()
+# Initialize Pyrogram Client
+app = Client(
+    "tg_group_bot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN,
+    plugins={"root": "plugins"},  # Automatically loads all plugin .py files
+    workers=20,
+    in_memory=True
+)
 
-# Pyrogram idle import
-from pyrogram.idle import idle
-
-if __name__ == "__main__":
-    asyncio.run(run_bot())
+# Optional: Check Redis connection at startup
+try:
+    redis.ping()
+    log.info("✅ Connected to Redis.")
+except Exception as e:
+    log.warning(f"❌ Redis not connected: {e}")
