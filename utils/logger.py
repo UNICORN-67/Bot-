@@ -1,12 +1,24 @@
 # Logger
 
-from pyrogram import Client
-from bot.config import LOG_CHANNEL_ID
+import logging
+import sys
 
-async def log_to_channel(client: Client, text: str):
-    if not LOG_CHANNEL_ID:
-        return
-    try:
-        await client.send_message(LOG_CHANNEL_ID, text)
-    except Exception as e:
-        print(f"Logging failed: {e}")
+def setup_logger(name: str = "Bot", level: int = logging.INFO) -> logging.Logger:
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    formatter = logging.Formatter(
+        "[%(asctime)s] [%(levelname)s] %(name)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(formatter)
+
+    if not logger.hasHandlers():
+        logger.addHandler(console_handler)
+
+    return logger
+
+# Default logger to use across the project
+log = setup_logger("bot")
