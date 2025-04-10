@@ -1,7 +1,7 @@
 # Logger
 
 from pyrogram import Client
-from config import LOG_CHANNEL_ID
+from bot.config import LOG_CHANNEL_ID
 
 async def log_to_channel(client: Client, text: str):
     if not LOG_CHANNEL_ID:
