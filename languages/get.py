@@ -1,15 +1,17 @@
 import yaml
-from pathlib import Path
+import os
 
-LANGUAGE_DIR = Path(__file__).parent
-LOADED_LANGS = {}
+# Load all available language files into memory (e.g., en.yml)
+LANGUAGES = {}
 
-def get_lang(lang_code="en"):
-    lang_file = LANGUAGE_DIR / f"{lang_code.lower()}.yml"
-    if lang_file.exists():
-        if lang_code not in LOADED_LANGS:
-            with open(lang_file, "r", encoding="utf-8") as file:
-                LOADED_LANGS[lang_code] = yaml.safe_load(file)
-        return LOADED_LANGS[lang_code]
-    else:
-        raise FileNotFoundError(f"Language file not found: {lang_file}")
+LANGUAGE_DIR = os.path.join(os.path.dirname(__file__))
+
+for file in os.listdir(LANGUAGE_DIR):
+    if file.endswith(".yml"):
+        lang_code = file.replace(".yml", "")
+        with open(os.path.join(LANGUAGE_DIR, file), "r", encoding="utf-8") as f:
+            LANGUAGES[lang_code] = yaml.safe_load(f)
+
+# Get translated string
+def get_string(lang: str, key: str) -> str:
+    return LANGUAGES.get(lang, LANGUAGES.get("en", {})).get(key, key)
