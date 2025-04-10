@@ -2,7 +2,7 @@
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from nsfw.detector import detect_nsfw
+from nsfw.detector import detect_text_nsfw,detect_video_nsfw,detect_image_nsfw
 from db.redisdb import redis
 from languages.get import get_string
 
