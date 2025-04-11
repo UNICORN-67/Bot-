@@ -1,33 +1,33 @@
 import yaml
 import os
 
+LANGUAGE_DIR = os.path.join(os.path.dirname(__file__))
+FONTS_FILE = os.path.join(LANGUAGE_DIR, "fonts.yml")
+
+_languages = {}
+_fonts = {}
+
+def load_languages():
+    for filename in os.listdir(LANGUAGE_DIR):
+        if filename.endswith(".yml") and filename != "fonts.yml":
+            lang_code = filename.replace(".yml", "")
+            with open(os.path.join(LANGUAGE_DIR, filename), "r", encoding="utf-8") as f:
+                _languages[lang_code] = yaml.safe_load(f)
+
+def load_fonts():
+    if os.path.exists(FONTS_FILE):
+        with open(FONTS_FILE, "r", encoding="utf-8") as f:
+            global _fonts
+            _fonts = yaml.safe_load(f)
+
 def get_string(lang_code: str, key: str) -> str:
-    """
-    Retrieve a translated string by language code and key from the YAML file.
-    Example key: "start.welcome"
-    """
-    try:
-        path = os.path.join("languages", f"{lang_code}.yml")
-        if not os.path.isfile(path):
-            return "Language file not found"
+    lang = _languages.get(lang_code, {})
+    return lang.get(key, key)
 
-        with open(path, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file)
+def get_font(style: str, text: str) -> str:
+    mapping = _fonts.get(style, {})
+    return "".join(mapping.get(c, c) for c in text)
 
-        keys = key.split(".")
-        for k in keys:
-            if isinstance(data, dict):
-                data = data.get(k)
-            else:
-                return "Invalid key path"
-
-        return data if isinstance(data, str) else "String not found"
-    except Exception as e:
-        return f"Error loading string: {e}"
-
-
-# Optional helper for easier access
-def lang(language: str):
-    def translator(key: str) -> str:
-        return get_string(language, key)
-    return translator
+# Load on module import
+load_languages()
+load_fonts()
