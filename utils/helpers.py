@@ -1,83 +1,51 @@
-pyrogram import filters
 from pyrogram.types import Message
-from bot import app
-from utils.helpers import extract_user
-from utils.logger import log_action
-from db.redisdb import is_toggle_enabled
-from languages.get import get_string
+from pyrogram.errors import PeerIdInvalid
 
-lang_key = "en"
+async def extract_user(message: Message):
+    if message.reply_to_message:
+        return message.reply_to_message.from_user
 
-@app.on_message(filters.command(["ban", "unban", "kick", "warn", "unwarn", "gban", "ungban", "gpromote", "gdemote"]))
-async def admin_commands(client, message: Message):
-    if not message.reply_to_message:
-        await message.reply(get_string(lang_key, "reply_user"))
-        return
+    if len(message.command) > 1:
+        user_id = message.command[1]
+        try:
+            if user_id.isdigit():
+                return await message._client.get_users(int(user_id))
+            elif user_id.startswith("@"):  # username
+                return await message._client.get_users(user_id)
+        except PeerIdInvalid:
+            return None
+        except Exception:
+            return None
 
-    user = await extract_user(message)
-    if not user:
-        await message.reply(get_string(lang_key, "user_not_found"))
-        return
-
-    cmd = message.command[0].lower()
-    chat_id = message.chat.id
-
-    if cmd == "ban":
-        await app.ban_chat_member(chat_id, user.id)
-        await message.reply(get_string(lang_key, "banned"))
-        await log_action("ban", chat_id, user.id)
-
-    elif cmd == "unban":
-        await app.unban_chat_member(chat_id, user.id)
-        await message.reply(get_string(lang_key, "unbanned"))
-        await log_action("unban", chat_id, user.id)
-
-    elif cmd == "kick":
-        await app.ban_chat_member(chat_id, user.id)
-        await app.unban_chat_member(chat_id, user.id)
-        await message.reply(get_string(lang_key, "kicked"))
-        await log_action("kick", chat_id, user.id)
-
-    elif cmd == "warn":
-        await message.reply(get_string(lang_key, "warned"))
-        await log_action("warn", chat_id, user.id)
-
-    elif cmd == "unwarn":
-        await message.reply(get_string(lang_key, "unwarned"))
-        await log_action("unwarn", chat_id, user.id)
-
-    elif cmd == "gban":
-        await message.reply(get_string(lang_key, "gbanned"))
-        await log_action("gban", chat_id, user.id)
-
-    elif cmd == "ungban":
-        await message.reply(get_string(lang_key, "ungbanned"))
-        await log_action("ungban", chat_id, user.id)
-
-    elif cmd == "gpromote":
-        await app.promote_chat_member(
-            chat_id, user.id,
-            can_change_info=True,
-            can_delete_messages=True,
-            can_invite_users=True,
-            can_restrict_members=True,
-            can_pin_messages=True,
-            can_promote_members=False,
-        )
-        await message.reply(get_string(lang_key, "promoted"))
-        await log_action("gpromote", chat_id, user.id)
-
-    elif cmd == "gdemote":
-        await app.promote_chat_member(
-            chat_id, user.id,
-            can_change_info=False,
-            can_delete_messages=False,
-            can_invite_users=False,
-            can_restrict_members=False,
-            can_pin_messages=False,
-            can_promote_members=False,
-        )
-        await message.reply(get_string(lang_key, "demoted"))
-        await log_action("gdemote", chat_id, user.id)
+    return None
 
 
+def get_user_id(user):
+    return user.id if hasattr(user, "id") else user
+
+
+def get_username(user):
+    if hasattr(user, "username") and user.username:
+        return f"@{user.username}"
+    return user.first_name if hasattr(user, "first_name") else str(user)
+
+
+def get_mention(user):
+    name = user.first_name if hasattr(user, "first_name") else str(user)
+    return f"[{name}](tg://user?id={user.id})" if hasattr(user, "id") else name
+
+
+def get_command_args(message: Message):
+    return message.text.split()[1:] if message.text else []
+
+
+def get_mention_user(message: Message):
+    if message.reply_to_message:
+        return get_mention(message.reply_to_message.from_user)
+    if len(message.command) > 1:
+        return message.command[1]
+    return ""
+
+
+def get_chat_id(message: Message):
+    return message.chat.id if message.chat else None
