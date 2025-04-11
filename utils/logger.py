@@ -1,24 +1,19 @@
 # Logger
 
 import logging
-import sys
 
-def setup_logger(name: str = "Bot", level: int = logging.INFO) -> logging.Logger:
+# Logger setup
+def setup_logger(name: str = "bot", level: int = logging.INFO) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
-
-    formatter = logging.Formatter(
-        "[%(asctime)s] [%(levelname)s] %(name)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
-    )
-
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(formatter)
-
-    if not logger.hasHandlers():
-        logger.addHandler(console_handler)
-
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    if not logger.handlers:
+        logger.addHandler(handler)
     return logger
 
-# Default logger to use across the project
-log = setup_logger("bot")
+# Log action to a log file or console
+def log_action(action: str, user: str = "", chat: str = ""):
+    logger = logging.getLogger("bot")
+    logger.info(f"Action: {action} | User: {user} | Chat: {chat}")
