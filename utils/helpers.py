@@ -35,7 +35,7 @@ def get_mention(user):
     return f"[{name}](tg://user?id={user.id})" if hasattr(user, "id") else name
 
 
-def get_command_args(message: Message):
+def get_command_arg(message: Message):
     return message.text.split()[1:] if message.text else []
 
 
