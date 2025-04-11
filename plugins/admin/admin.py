@@ -3,6 +3,7 @@
 from pyrogram import filters
 from pyrogram.types import Message
 from bot.bot import app
+from bot.config import OWNER_ID
 from utils.helpers import extract_user, get_command_arg, mention_user, get_chat_id
 from db.redisdb import get_toggle, set_toggle
 from utils.logger import log_action
