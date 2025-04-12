@@ -1,11 +1,19 @@
-import os
-from bot.bot import app  # Import your Pyrogram app from the bot directory
+import asyncio
+from bot.bot import app
+from pyrogram import idle
+from utils.logger import log_action
 
-# Get the port from the environment, with a default of 8080 for local testing
-PORT = os.getenv("PORT", 8080)
+async def main():
+    print(">> Bot is starting...")
+    await app.start()
+    log_action("Bot started successfully.")
+    print(">> Bot is now running...")
+    await idle()
+    await app.stop()
+    print(">> Bot stopped.")
 
 if __name__ == "__main__":
-    print(f">> Bot is starting on PORT {PORT}...")
-    
-    # Start the Pyrogram bot (with polling mode)
-    app.run()
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print(">> Bot shutdown manually.")
