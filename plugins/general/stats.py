@@ -1,16 +1,36 @@
-import platform import psutil from datetime import datetime from pyrogram import filters from pyrogram.types import Message from bot import app, START_TIME from languages.get import lang from utils.helpers import get_readable_time
+import platform
+import psutil
+import time
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from languages.get import get_string
+from utils.helpers import get_readable_time
 
-_ = lang("en")
+START_TIME = time.time()
 
-@app.on_message(filters.command("stats")) async def stats_cmd(_, message: Message): uptime = get_readable_time((datetime.now() - START_TIME).seconds) cpu = psutil.cpu_percent() ram = psutil.virtual_memory().percent disk = psutil.disk_usage("/").percent platform_info = platform.system() + " " + platform.release()
 
-text = _("general.stats_full").format(
-    uptime=uptime,
-    cpu=cpu,
-    ram=ram,
-    disk=disk,
-    platform=platform_info
-)
+@Client.on_message(filters.command("stats"))
+async def stats(client: Client, message: Message):
+    chat_id = message.chat.id
+    _ = get_string(chat_id)
 
-await message.reply_text(text)
+    uptime = get_readable_time(time.time() - START_TIME)
+    cpu = psutil.cpu_percent()
+    ram = psutil.virtual_memory().percent
+
+    total_users = len(await client.get_users())
+    total_chats = len(await client.get_dialogs())
+
+    text = (
+        f"**{_('stats.bot_stats')}**\n"
+        f"**{_('stats.uptime')}**: `{uptime}`\n"
+        f"**{_('stats.cpu')}**: `{cpu}%`\n"
+        f"**{_('stats.ram')}**: `{ram}%`\n"
+        f"**{_('stats.total_users')}**: `{total_users}`\n"
+        f"**{_('stats.total_chats')}**: `{total_chats}`\n"
+        f"**{_('stats.python')}**: `{platform.python_version()}`\n"
+        f"**{_('stats.platform')}**: `{platform.system()} {platform.release()}`"
+    )
+
+    await message.reply(text)
 
