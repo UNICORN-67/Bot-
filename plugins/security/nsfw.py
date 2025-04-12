@@ -6,7 +6,7 @@ from nsfw.detector import detect_text_nsfw, detect_image_nsfw, detect_video_nsfw
 from db.redisdb import get_toggle
 from languages.get import get_string
 from utils.helpers import get_user_id
-from config import OWNER_ID
+from bot.config import OWNER_ID
 
 lang = "en"
 def _(key: str) -> str:
