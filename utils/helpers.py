@@ -1,75 +1,98 @@
+import re
+from pyrogram import Client
 from pyrogram.types import Message
-from pyrogram.enums import ChatType, ChatMemberStatus
 
-
-async def extract_user(message: Message):
-    """Extract user from a command message or reply."""
-    user_id = None
-    reason = None
-
-    if message.reply_to_message:
-        user_id = message.reply_to_message.from_user.id
-    elif message.command and len(message.command) > 1:
-        user_id = message.command[1]
-        if user_id.startswith("@"):
-            user_id = user_id[1:]
-        if len(message.command) > 2:
-            reason = " ".join(message.command[2:])
-    return int(user_id) if user_id and str(user_id).isdigit() else user_id, reason
-
-
-def get_command_arg(message: Message) -> str:
-    """Return argument after command."""
-    if message.text:
-        parts = message.text.split(maxsplit=1)
-        return parts[1] if len(parts) > 1 else ""
-    return ""
-
-
-def get_chat_id(message: Message) -> int:
-    """Returns chat ID from message."""
-    return message.chat.id
-
-
-async def mention_user(message: Message):
-    """Return a mention string for a user in reply or via text_mention."""
+def extract_user(message: Message):
+    """
+    Extract the user from a message, either from mentions, user id or username.
+    """
+    user = None
     if message.reply_to_message:
         user = message.reply_to_message.from_user
-        return user.mention if user else None
     elif message.entities:
         for entity in message.entities:
-            if entity.type == "text_mention":
-                return entity.user.mention
-    return None
-
-
-def get_user_id(message: Message) -> int | None:
-    """Get the user ID from message if available."""
-    if message.reply_to_message:
-        return message.reply_to_message.from_user.id
+            if entity.type == "mention":
+                user = message.text[entity.offset: entity.offset + entity.length]
+                break
     elif message.from_user:
-        return message.from_user.id
+        user = message.from_user
+    return user
+
+def get_user_id(message: Message):
+    """
+    Get the user ID from a message, either from reply or sender.
+    """
+    user = extract_user(message)
+    if user:
+        return user.id
     return None
 
+def get_chat_id(message: Message):
+    """
+    Get the chat ID from a message.
+    """
+    return message.chat.id
 
-def get_chat_type(message: Message) -> str:
-    """Return type of chat: private, group, supergroup, or channel."""
-    return message.chat.type.name if hasattr(message.chat, "type") else "unknown"
+def mention_user(user):
+    """
+    Get the user mention string for a user.
+    """
+    return f"[{user.first_name}](tg://user?id={user.id})" if user else None
 
+def get_readable_time(seconds: int):
+    """
+    Convert seconds into a human-readable format like: "2 days, 3 hours, 45 minutes, 10 seconds".
+    """
+    days = seconds // 86400
+    hours = (seconds % 86400) // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
 
-async def is_admin(client, chat_id: int, user_id: int) -> bool:
-    """Check if user is admin in a chat."""
+def is_admin(user_id: int, chat_id: int, client: Client):
+    """
+    Check if a user is an admin of a chat.
+    """
     try:
-        member = await client.get_chat_member(chat_id, user_id)
-        return member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
-    except:
+        admins = client.get_chat_administrators(chat_id)
+        return any(admin.user.id == user_id for admin in admins)
+    except Exception:
         return False
 
+def is_owner(user_id: int, owner_id: int):
+    """
+    Check if the user is the owner of the bot (typically defined in the config).
+    """
+    return user_id == owner_id
 
-async def is_owner(client, chat_id: int, user_id: int) -> bool:
-    """Check if user is the group owner."""
-    try:
-        member = await client.get_chat_member(chat_id, user_id)
-        return member.status == ChatMemberStatus.OWNER
-    except:
-        return False
+def get_chat_members_count(chat_id: int, client: Client):
+    """
+    Get the number of members in a chat.
+    """
+    chat = client.get_chat(chat_id)
+    return chat.members_count if chat else 0
+
+def get_message_text(message: Message):
+    """
+    Get the text of the message, properly handling entities.
+    """
+    if message.text:
+        return message.text
+    return ''
+
+def get_command_args(message: Message):
+    """
+    Extract command arguments from the message (after the command).
+    """
+    args = message.text.split()[1:] if message.text else []
+    return args
+
+def is_nsfw_content(message: Message):
+    """
+    Check if the message contains NSFW content.
+    (You should replace this logic with actual detection methods.)
+    """
+    nsfw_keywords = ["nsfw", "porn", "sex", "adult", "nude", "explicit"]
+    if any(keyword in message.text.lower() for keyword in nsfw_keywords):
+        return True
+    return False
