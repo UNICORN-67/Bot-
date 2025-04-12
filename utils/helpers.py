@@ -80,7 +80,7 @@ def get_message_text(message: Message):
         return message.text
     return ''
 
-def get_command_args(message: Message):
+def get_command_arg(message: Message):
     """
     Extract command arguments from the message (after the command).
     """
