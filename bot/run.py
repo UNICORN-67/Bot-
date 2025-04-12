@@ -18,23 +18,10 @@ if __name__ == "__main__":
 """
 
 import os
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from bot.bot import app  # Your Pyrogram client instance
 
-class KeepAliveHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is running!")
+PORT = os.getenv("PORT", 8080)
 
-def keep_alive():
-    port = int(os.environ.get("PORT", 10000))  # Render provides PORT env var
-    server = HTTPServer(("0.0.0.0", port), KeepAliveHandler)
-    print(f"Keep-alive server running on port {port}")
-    server.serve_forever()
-
-# Run bot and keep-alive server
 if __name__ == "__main__":
-    import threading
-    t = threading.Thread(target=keep_alive)
-    t.start()
-    app.run()  # Your Pyrogram Client
+    print(f">> Starting bot using polling on PORT {PORT}...")
+    app.run()
