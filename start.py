@@ -1,20 +1,11 @@
-import logging
-from bot.bot import app  # Import your Pyrogram Client from the bot folder
-from utils.logger import setup_logger  # Import custom logger setup if you have one
-from bot.config import API_ID, API_HASH, BOT_TOKEN  # Import bot credentials from config (if needed)
+import os
+from bot.bot import app  # Import your Pyrogram app from the bot directory
 
-def start_bot():
-    # Setting up the logger
-    setup_logger()
-
-    # Log the bot startup
-    logging.info("Starting the bot...")
-
-    # Log the API credentials check (useful for debugging)
-    logging.debug(f"Using API_ID: {API_ID}, API_HASH: {API_HASH}")
-
-    # Run the bot
-    app.run()
+# Get the port from the environment, with a default of 8080 for local testing
+PORT = os.getenv("PORT", 8080)
 
 if __name__ == "__main__":
-    start_bot()
+    print(f">> Bot is starting on PORT {PORT}...")
+    
+    # Start the Pyrogram bot (with polling mode)
+    app.run()
