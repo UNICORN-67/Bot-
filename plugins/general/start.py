@@ -1,25 +1,20 @@
 # Start and help command
 
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
-from bot import app
-from languages.get import lang
-from utils.helpers import get_readable_time
-from datetime import datetime
+from languages.get import get_string
+from config import OWNER_ID
 
-_ = lang("en")
-START_TIME = datetime.now()
+@Client.on_message(filters.command("start"))
+async def start_command(client: Client, message: Message):
+    chat_id = message.chat.id
+    _ = get_string(chat_id)
 
-@app.on_message(filters.command("start"))
-async def start_cmd(_, message: Message):
-    uptime = get_readable_time((datetime.now() - START_TIME).seconds)
-    user = message.from_user.first_name
+    if message.chat.type == "private":
+        text = _(
+            "start.private"
+        ).format(mention=message.from_user.mention, owner=f"[Owner](tg://user?id={OWNER_ID})")
 
-    text = _(
-        "general.start_full"
-    ).format(
-        user=user,
-        uptime=uptime
-    )
-
-    await message.reply_text(text)
+        await message.reply(text, disable_web_page_preview=True)
+    else:
+        await message.reply(_("start.group"))
