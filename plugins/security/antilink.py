@@ -10,7 +10,7 @@ from languages.get import get_string
 
 LINK_PATTERN = re.compile(r"(https?://\S+|t\.me/\S+|telegram\.me/\S+)", re.IGNORECASE)
 
-@Client.on_message(filters.group & filters.text & ~filters.edited)
+@Client.on_message(filters.group & filters.text )
 async def antilink_handler(client: Client, message: Message):
     chat_id = get_chat_id(message)
 
