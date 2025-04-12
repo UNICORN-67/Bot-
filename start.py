@@ -1,7 +1,7 @@
 import logging
 from bot.bot import app  # Import your Pyrogram Client from the bot folder
 from utils.logger import setup_logger  # Import custom logger setup if you have one
-from config import API_ID, API_HASH, BOT_TOKEN  # Import bot credentials from config (if needed)
+from bot.config import API_ID, API_HASH, BOT_TOKEN  # Import bot credentials from config (if needed)
 
 def start_bot():
     # Setting up the logger
