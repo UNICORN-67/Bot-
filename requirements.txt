@@ -10,6 +10,4 @@ opencv-python-headless
 psutil
 aiohttp
 uvicorn
-transformers
-torch
 scikit-learn
