@@ -1,23 +1,32 @@
 # Anti-link module
 
-import re from pyrogram import filters from pyrogram.types import Message from bot import app from languages.get import lang from db.redisdb import get_toggle
+from pyrogram import Client, filters
+from pyrogram.types import Message
+import re
 
-_ = lang("en")
+from db.redisdb import get_toggle
+from utils.helpers import is_admin, get_chat_id
+from languages.get import get_string
 
-LINK_REGEX = re.compile(r"https?://t.me/[\w]+|@\w+|t.me/[\w]+", re.IGNORECASE)
+LINK_PATTERN = re.compile(r"(https?://\S+|t\.me/\S+|telegram\.me/\S+)", re.IGNORECASE)
 
-@app.on_message(filters.group & filters.text) async def check_antilink(_, message: Message): chat_id = message.chat.id
+@Client.on_message(filters.group & filters.text & ~filters.edited)
+async def antilink_handler(client: Client, message: Message):
+    chat_id = get_chat_id(message)
 
-if not await get_toggle(chat_id, "antilink"):
-    return
-
-if message.entities:
-    if any(entity.type in ["url", "text_link"] for entity in message.entities):
-        await delete_and_warn(message)
+    # Don't act if user is admin or the feature is off
+    if await is_admin(client, message):
         return
 
-if LINK_REGEX.search(message.text):
-    await delete_and_warn(message)
+    if not await get_toggle(chat_id, "antilink"):
+        return
 
-async def delete_and_warn(message: Message): try: await message.delete() await message.reply_text(_("security.antilink_triggered")) except Exception: pass
-
+    # If any link is detected
+    if LINK_PATTERN.search(message.text):
+        try:
+            await message.delete()
+            await message.reply_text(
+                get_string("en", "antilink_detected").format(user_id=message.from_user.id)
+            )
+        except Exception as e:
+            print(f"[AntiLink Error] {e}")
