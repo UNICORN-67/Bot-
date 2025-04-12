@@ -1,4 +1,5 @@
 # Alive command with stats
+
 from pyrogram import Client, filters
 from datetime import datetime
 import time
@@ -6,7 +7,7 @@ import platform
 import psutil
 
 from utils.helpers import mention_user
-from utils.lang import get_lang
+from languages.get import get_string
 from utils.logger import log_action
 
 start_time = time.time()
@@ -33,8 +34,8 @@ def get_readable_time(seconds: int) -> str:
 async def alive(_, message):
     user = message.from_user
     chat_id = message.chat.id
-    lang = await get_lang(chat_id)
-    _ = lambda key: lang.get(key, key)
+
+    _ = get_string(chat_id)
 
     uptime = get_readable_time(time.time() - start_time)
     cpu = psutil.cpu_percent()
