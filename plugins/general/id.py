@@ -1,19 +1,27 @@
 # ID command
 
-from pyrogram import filters 
-from pyrogram.types import Message 
-from bot import app 
-from languages.get import lang
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from languages.get import get_string
+from utils.helpers import get_chat_id, mention_user, extract_user
 
-_ = lang("en")
 
-@app.on_message(filters.command("id")) 
-async def get_id(_, message: Message): user_id = message.from_user.id if message.from_user else "Unknown" chat_id = message.chat.id reply_id = message.reply_to_message.from_user.id if message.reply_to_message else "N/A"
+@Client.on_message(filters.command("id"))
+async def id_info(client: Client, message: Message):
+    chat_id = get_chat_id(message)
+    _ = get_string(chat_id)
 
-text = _("general.id_info").format(
-    user_id=user_id,
-    chat_id=chat_id,
-    reply_id=reply_id
-)
-await message.reply_text(text)
+    target_user, _ = await extract_user(message)
 
+    user_id = target_user.id if target_user else message.from_user.id
+    mention = mention_user(target_user or message.from_user)
+    msg_id = message.reply_to_message.id if message.reply_to_message else message.id
+
+    text = (
+        f"**{_('id.user')}**: `{user_id}`\n"
+        f"**{_('id.chat')}**: `{message.chat.id}`\n"
+        f"**{_('id.message')}**: `{msg_id}`\n"
+        f"**{_('id.mention')}**: {mention}"
+    )
+
+    await message.reply(text)
