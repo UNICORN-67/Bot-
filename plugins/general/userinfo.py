@@ -1,17 +1,29 @@
 # User info command
 
-from pyrogram import filters from pyrogram.types import Message from bot import app from languages.get import lang from utils.helpers import extract_user
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from languages.get import get_string
+from utils.helpers import extract_user, mention_user, get_chat_id
 
-_ = lang("en")
 
-@app.on_message(filters.command("userinfo")) async def userinfo_cmd(, message: Message): user = await extract_user(message) if not user: return await message.reply_text(("general.unknown_user"))
+@Client.on_message(filters.command("userinfo"))
+async def user_info(client: Client, message: Message):
+    chat_id = get_chat_id(message)
+    _ = get_string(chat_id)
 
-text = _("general.userinfo").format(
-    id=user.id,
-    first_name=user.first_name or "N/A",
-    username="@" + user.username if user.username else "N/A",
-    dc_id=user.dc_id if hasattr(user, "dc_id") else "N/A",
-    is_bot=user.is_bot
-)
-await message.reply_text(text)
+    user, _ = await extract_user(message)
+    if not user:
+        return await message.reply(_("userinfo.no_user"))
 
+    mention = mention_user(user)
+    text = (
+        f"**{_('userinfo.name')}**: {user.first_name or '-'}\n"
+        f"**{_('userinfo.id')}**: `{user.id}`\n"
+        f"**{_('userinfo.dc')}**: `{user.dc_id or 'N/A'}`\n"
+        f"**{_('userinfo.mention')}**: {mention}\n"
+        f"**{_('userinfo.bot')}**: `{user.is_bot}`\n"
+        f"**{_('userinfo.restricted')}**: `{user.is_restricted}`\n"
+        f"**{_('userinfo.language_code')}**: `{user.language_code or 'N/A'}`"
+    )
+
+    await message.reply(text)
