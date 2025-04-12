@@ -12,7 +12,7 @@ FLOOD_LIMIT = 5  # Max messages
 FLOOD_TIME = 10  # Seconds window
 MUTE_DURATION = 60  # Not used here, but you can implement it
 
-@Client.on_message(filters.group & filters.text & ~filters.edited)
+@Client.on_message(filters.group & filters.text)
 async def antiflood_handler(client: Client, message: Message):
     chat_id = get_chat_id(message)
     user_id = get_user_id(message)
