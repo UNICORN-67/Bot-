@@ -3,7 +3,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from languages.get import get_string
-from config import OWNER_ID
+from bot.config import OWNER_ID
 
 @Client.on_message(filters.command("start"))
 async def start_command(client: Client, message: Message):
